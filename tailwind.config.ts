@@ -7,6 +7,8 @@ export default {
       colors: {
         bgPrimary: "#F5F5F5",
         textPrimary: "#000000",
+        borderPrimary: "#000000",
+        hoverPrimary: "#ACACAC",
         loadingPrimary: "#ACACAC",
       },
     },

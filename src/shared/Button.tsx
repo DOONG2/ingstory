@@ -12,7 +12,7 @@ export default function Button({
   return (
     <button
       type="button"
-      className={`text-textPrimary ${className}`}
+      className={`text-textPrimary border border-borderPrimary hover:bg-hoverPrimary rounded-3xl px-14 py-1 ${className}`}
       onClick={() => {
         handleClickButton();
       }}
