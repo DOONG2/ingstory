@@ -12,7 +12,7 @@ export default function Button({
   return (
     <button
       type="button"
-      className={`border-black text-[#b1452e] border-solid border-2 ${className}`}
+      className={`text-textPrimary ${className}`}
       onClick={() => {
         handleClickButton();
       }}

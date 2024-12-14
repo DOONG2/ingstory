@@ -18,7 +18,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${jetBrainsMonoRegular.className} antialiased`}>
+      <body
+        className={`${jetBrainsMonoRegular.className} antialiased bg-bgPrimary text-textPrimary`}
+      >
         {children}
       </body>
     </html>
