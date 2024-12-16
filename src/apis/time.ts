@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { client } from "./axios";
 
-export type GetTimeResponse = { duration: Date };
+export type GetTimeResponse = { duration: string };
 
 export async function getTime() {
   const response = await client.get<GetTimeResponse>("/");
