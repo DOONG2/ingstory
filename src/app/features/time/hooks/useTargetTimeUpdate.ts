@@ -16,7 +16,8 @@ export default function useTargetTimeUpdate({
   useEffect(() => {
     if (isSuccess && duration != undefined) {
       const targetTimeDate = getDateByString(duration);
-      localStorage.setItem(TARGET_TIME, String(targetTimeDate.getTime()));
+      const targetTime = new Date().getTime() + targetTimeDate.getTime();
+      localStorage.setItem(TARGET_TIME, String(targetTime));
     }
   }, [duration, isSuccess, setTargetTime]);
 
