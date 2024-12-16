@@ -4,9 +4,7 @@ import { client } from "./axios";
 export type GetTimeResponse = { duration: Date };
 
 export async function getTime() {
-  const response = await client.get<GetTimeResponse>("/", {
-    withCredentials: true,
-  });
+  const response = await client.get<GetTimeResponse>("/");
   return response.data;
 }
 
