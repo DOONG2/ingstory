@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import ReactQueryProvider from "@/shared/ReactQueryProvider";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 export const jetBrainsMonoRegular = localFont({
   src: "./fonts/JetBrainsMono/JetBrainsMono-Regular.woff2",
@@ -21,7 +23,10 @@ export default function RootLayout({
       <body
         className={`${jetBrainsMonoRegular.className} antialiased bg-bgPrimary text-textPrimary`}
       >
-        {children}
+        <ReactQueryProvider>
+          <ReactQueryDevtools initialIsOpen={false} />
+          {children}
+        </ReactQueryProvider>
       </body>
     </html>
   );

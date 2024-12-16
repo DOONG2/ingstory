@@ -1,17 +1,11 @@
 "use client";
 
-import Button from "@/shared/Button";
+import TimeButton from "./features/time/TimeButton";
 
 export default function Home() {
   return (
     <div className="flex justify-center items-center min-h-[100vh]">
-      <Button
-        className="items-center"
-        text="Start"
-        handleClickButton={() => {
-          console.log("test");
-        }}
-      />
+      <TimeButton className="items-center" />
     </div>
   );
 }
