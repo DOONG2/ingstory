@@ -1,22 +1,32 @@
 import { useGetTimeQuery } from "@/apis/time";
 import Button from "@/shared/Button";
 import { useEffect, useState } from "react";
-import { START_TIME, TARGET_TIME, TIME_DIFF } from "@/shared/constants/key";
+import { TARGET_TIME } from "@/shared/constants/key";
 import getDateByString from "./getDateByString";
 
 type TimeButtonProps = {
   className?: string;
 };
 
+type TimeState = {
+  date: Date;
+  formattedTime: string;
+};
+
 export default function TimeButton({ className }: TimeButtonProps) {
-  const [startTime, setStartTime] = useState<string | null>(
-    localStorage.getItem(START_TIME)
-  );
+  const [currentTime, setCurrentTime] = useState<TimeState>(() => {
+    const initialDate = new Date();
+    return {
+      date: initialDate,
+      formattedTime: initialDate.toLocaleTimeString(),
+    };
+  });
+
   const [targetTime, setTartgetTime] = useState<string | null>(
     localStorage.getItem(TARGET_TIME)
   );
   const [timeDiff, setTimeDiff] = useState(
-    Number(targetTime) - Number(startTime)
+    Number(targetTime) - Number(currentTime)
   );
   const [toggle, setToggle] = useState(false);
 
@@ -24,14 +34,30 @@ export default function TimeButton({ className }: TimeButtonProps) {
     toggle,
   });
 
-  console.log(startTime, targetTime, timeDiff);
+  console.log(currentTime, targetTime, timeDiff);
   const buttonText = isLoading || isFetching ? "loading.." : "Start";
+  const isExistTargetTime = localStorage.getItem(TARGET_TIME) != null;
 
   useEffect(() => {
     if (isSuccess) {
       setTartgetTime(String(getDateByString(data.duration).getTime()));
     }
   }, [data, isSuccess]);
+
+  useEffect(() => {}, [targetTime]);
+
+  useEffect(() => {
+    if (!isExistTargetTime) return;
+    const intervalId = setInterval(() => {
+      const currentDate = new Date();
+      setCurrentTime({
+        date: currentDate,
+        formattedTime: currentDate.toLocaleTimeString(),
+      });
+    }, 1000); // 1초마다 갱신
+
+    return () => clearInterval(intervalId); // 컴포넌트 언마운트 시 인터벌 해제
+  }, [isExistTargetTime]);
 
   // TODO: if(isSuccess) 현재 시간 startTime 초기화 / targetTime 없으면 startTime + duration = targetTime 초기화 / localStorage에  targetTime - startTime 차이 저장
   // TODO: 실시간 차이값 / 처음 차이값 계산해서 로딩레이어 넓이값 조절
@@ -44,14 +70,14 @@ export default function TimeButton({ className }: TimeButtonProps) {
   return (
     <div className={` ${className}`}>
       {isError && <div>Error.</div>}
-      {targetTime == null && (
+      {isExistTargetTime == true && <div>{timeDiff}</div>}
+      {isExistTargetTime == false && (
         <Button
           text={buttonText}
           handleClickButton={() => setToggle(true)}
           disabled={isLoading || isFetching}
         />
       )}
-      {targetTime != null && <div>{timeDiff}</div>}
 
       {/* <div>Done.</div> */}
     </div>
