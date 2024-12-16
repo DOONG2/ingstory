@@ -3,6 +3,7 @@ import Button from "@/shared/Button";
 import { useEffect, useState } from "react";
 import { TARGET_TIME } from "@/shared/constants/key";
 import getDateByString from "./getDateByString";
+import useTargetTimeUpdate from "./hooks/useTargetTimeUpdate";
 
 type TimeButtonProps = {
   className?: string;
@@ -22,7 +23,7 @@ export default function TimeButton({ className }: TimeButtonProps) {
     };
   });
 
-  const [targetTime, setTartgetTime] = useState<string | null>(
+  const [targetTime, setTargetTime] = useState<string | null>(
     localStorage.getItem(TARGET_TIME)
   );
   const [timeDiff, setTimeDiff] = useState(
@@ -38,11 +39,7 @@ export default function TimeButton({ className }: TimeButtonProps) {
   const buttonText = isLoading || isFetching ? "loading.." : "Start";
   const isExistTargetTime = localStorage.getItem(TARGET_TIME) != null;
 
-  useEffect(() => {
-    if (isSuccess) {
-      setTartgetTime(String(getDateByString(data.duration).getTime()));
-    }
-  }, [data, isSuccess]);
+  useTargetTimeUpdate({ isSuccess, duration: data?.duration, setTargetTime });
 
   useEffect(() => {}, [targetTime]);
 
