@@ -78,6 +78,7 @@ export default function TimeButton({ className }: TimeButtonProps) {
       if (minutes < 0 || seconds < 0) {
         clearInterval(intervalId);
         initTimeButtonState();
+        return;
       }
 
       setTimeDiff({ minutes, seconds });
@@ -104,6 +105,7 @@ export default function TimeButton({ className }: TimeButtonProps) {
           <div>Done.</div>
         ) : (
           <Button
+            className="disabled:hover:bg-bgPrimary"
             text={buttonText}
             handleClickButton={() => setButtonToggle(true)}
             disabled={isLoading || isFetching}
