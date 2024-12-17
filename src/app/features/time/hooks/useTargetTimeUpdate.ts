@@ -38,22 +38,4 @@ export default function useTargetTimeUpdate({
       setTimeDiff({ minutes, seconds });
     }
   }, [duration, isSuccess, setIsExistTargetTime, setTargetTime, setTimeDiff]);
-
-  // useEffect(() => {
-  //   // localStorage 변경 감지 이벤트 리스너
-  //   const handleStorageChange = (event: StorageEvent) => {
-  //     if (event.key === TARGET_TIME) {
-  //       const newValue = event.newValue;
-  //       console.log("이벤트:" + newValue);
-  //       if (newValue === null) setIsExistTargetTime(false);
-  //       else setTargetTime(Number(newValue));
-  //     }
-  //   };
-
-  //   window.addEventListener("storage", handleStorageChange);
-
-  //   return () => {
-  //     window.removeEventListener("storage", handleStorageChange);
-  //   };
-  // }, [setIsExistTargetTime, setTargetTime]);
 }

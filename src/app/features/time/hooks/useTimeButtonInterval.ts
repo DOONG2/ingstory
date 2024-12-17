@@ -1,13 +1,13 @@
-import { TimeObject } from "./../TimeButton";
+import { currentTimeType, targetTimeType, TimeObject } from "./../TimeButton";
 import { useEffect } from "react";
 import { calculateTimeDifference } from "../calculateTimeDifference";
 
 type useTimeBUttonIntervalProps = {
   isExistTargetTime: boolean;
-  targetTime: number | null;
+  targetTime: targetTimeType;
   initTimeButtonState: () => void;
   setTimeDiff: (diff: TimeObject) => void;
-  setCurrentTime: (time: number) => void;
+  setCurrentTime: (currentTime: currentTimeType) => void;
 };
 
 export default function useTimeButtonInterval({

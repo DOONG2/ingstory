@@ -1,6 +1,6 @@
 import { useGetTimeQuery } from "@/apis/time";
 import Button from "@/shared/Button";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { TARGET_TIME } from "@/shared/constants/key";
 import useTargetTimeUpdate from "./hooks/useTargetTimeUpdate";
 import formatTimeText from "./formatTimeText";
@@ -9,10 +9,14 @@ import { GET_TIME_QUERY_KEY } from "@/shared/constants/query";
 import { queryClient } from "@/shared/ReactQueryProvider";
 import useTimeButtonInterval from "./hooks/useTimeButtonInterval";
 import { cx } from "@/shared/tailWindCSS";
+import useTimeButtonLoadingLayer from "./hooks/useTimeButtonLoadingLayer";
 
 type TimeButtonProps = {
   className?: string;
 };
+
+export type currentTimeType = number;
+export type targetTimeType = number | null;
 
 export type TimeObject = {
   minutes: number;
@@ -20,8 +24,10 @@ export type TimeObject = {
 };
 
 export default function TimeButton({ className }: TimeButtonProps) {
-  const [currentTime, setCurrentTime] = useState<number>(new Date().getTime());
-  const [targetTime, setTargetTime] = useState<number | null>(
+  const [currentTime, setCurrentTime] = useState<currentTimeType>(
+    new Date().getTime()
+  );
+  const [targetTime, setTargetTime] = useState<targetTimeType>(
     Number(localStorage.getItem(TARGET_TIME))
   );
   const [timeDiff, setTimeDiff] = useState<TimeObject>(() => {
@@ -38,15 +44,12 @@ export default function TimeButton({ className }: TimeButtonProps) {
     localStorage.getItem(TARGET_TIME) != null
   );
   const [doneToggle, setDoneToggle] = useState(false);
-  const [loadingDuration, setLoadingDuration] = useState(0);
 
   const { data, isError, isLoading, isFetching, isSuccess } = useGetTimeQuery({
     toggle: buttonToggle,
   });
 
   const buttonText = isLoading || isFetching ? "loading.." : "Start";
-
-  console.log(currentTime, targetTime, timeDiff, isExistTargetTime);
 
   const initTimeButtonState = useCallback(() => {
     localStorage.removeItem(TARGET_TIME);
@@ -77,16 +80,10 @@ export default function TimeButton({ className }: TimeButtonProps) {
     setCurrentTime,
   });
 
-  useEffect(() => {
-    if (targetTime === null || targetTime === 0) return;
-    const { timeDiff } = calculateTimeDifference({ currentTime, targetTime });
-    setLoadingDuration(timeDiff);
-  }, [targetTime]);
-
-  console.log(loadingDuration);
-
-  // TODO: 실시간 차이값 / 처음 차이값 계산해서 로딩레이어 넓이값 조절
-  // TODO: 인터벌 매끄럽지 못하면 애니메이션or더짧게
+  const loadingDuration = useTimeButtonLoadingLayer({
+    currentTime,
+    targetTime,
+  });
 
   return (
     <>
