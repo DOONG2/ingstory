@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { TARGET_TIME } from "@/shared/constants/key";
 import useTargetTimeUpdate from "./hooks/useTargetTimeUpdate";
 import formatTimeText from "./formatTimeText";
+import { calculateTimeDifference } from "./calculateTimeDifference";
 
 type TimeButtonProps = {
   className?: string;
@@ -19,18 +20,22 @@ export default function TimeButton({ className }: TimeButtonProps) {
   const [targetTime, setTargetTime] = useState<number | null>(
     Number(localStorage.getItem(TARGET_TIME))
   );
-  const [timeDiff, setTimeDiff] = useState<TimeObject>({
-    minutes: 0,
-    seconds: 0,
+  const [timeDiff, setTimeDiff] = useState<TimeObject>(() => {
+    if (targetTime == null) return { minutes: 0, seconds: 0 };
+    const { minutes, seconds } = calculateTimeDifference({
+      currentTime,
+      targetTime,
+    });
+    return { minutes, seconds };
   });
-  const [toggle, setToggle] = useState(false);
+  const [buttonToggle, setButtonToggle] = useState(false);
   const [isExistTargetTime, setIsExistTargetTime] = useState<boolean>(
     localStorage.getItem(TARGET_TIME) != null
   );
   const [doneToggle, setDoneToggle] = useState(false);
 
   const { data, isError, isLoading, isFetching, isSuccess } = useGetTimeQuery({
-    toggle,
+    toggle: buttonToggle,
   });
 
   const buttonText = isLoading || isFetching ? "loading.." : "Start";
@@ -42,7 +47,7 @@ export default function TimeButton({ className }: TimeButtonProps) {
     setTargetTime(null);
     setTimeDiff({ minutes: 0, seconds: 0 });
     setIsExistTargetTime(false);
-    setToggle(false);
+    setButtonToggle(false);
     setDoneToggle(true);
     setTimeout(() => {
       setDoneToggle(false);
@@ -63,17 +68,16 @@ export default function TimeButton({ className }: TimeButtonProps) {
       setCurrentTime(currentTime);
 
       if (targetTime == null) return;
-      let timeDiff = targetTime - currentTime;
+      const { minutes, seconds } = calculateTimeDifference({
+        currentTime,
+        targetTime,
+      });
 
-      if (timeDiff <= 0) {
+      if (minutes < 0 || seconds < 0) {
         clearInterval(intervalId);
-        setTimeDiff({ minutes: 0, seconds: 0 });
         initTimeButtonState();
       }
 
-      const minutes = Math.floor(timeDiff / (1000 * 60));
-      timeDiff -= minutes * (1000 * 60);
-      const seconds = Math.floor(timeDiff / 1000);
       setTimeDiff({ minutes, seconds });
 
       console.log("interval : " + currentTime);
@@ -99,7 +103,7 @@ export default function TimeButton({ className }: TimeButtonProps) {
         ) : (
           <Button
             text={buttonText}
-            handleClickButton={() => setToggle(true)}
+            handleClickButton={() => setButtonToggle(true)}
             disabled={isLoading || isFetching}
           />
         ))}
