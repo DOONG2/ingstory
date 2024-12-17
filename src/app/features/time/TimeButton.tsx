@@ -27,6 +27,7 @@ export default function TimeButton({ className }: TimeButtonProps) {
   const [isExistTargetTime, setIsExistTargetTime] = useState<boolean>(
     localStorage.getItem(TARGET_TIME) != null
   );
+  const [doneToggle, setDoneToggle] = useState(false);
 
   const { data, isError, isLoading, isFetching, isSuccess } = useGetTimeQuery({
     toggle,
@@ -42,6 +43,10 @@ export default function TimeButton({ className }: TimeButtonProps) {
     setTimeDiff({ minutes: 0, seconds: 0 });
     setIsExistTargetTime(false);
     setToggle(false);
+    setDoneToggle(true);
+    setTimeout(() => {
+      setDoneToggle(false);
+    }, 1000);
   }, []);
 
   useTargetTimeUpdate({
@@ -77,11 +82,7 @@ export default function TimeButton({ className }: TimeButtonProps) {
     return () => clearInterval(intervalId);
   }, [initTimeButtonState, isExistTargetTime, targetTime]);
 
-  // TODO: diff 음수일때 로컬스토리지 삭제, 상태 init, Done 변경
   // TODO: 실시간 차이값 / 처음 차이값 계산해서 로딩레이어 넓이값 조절
-  // TODO: 실시간 차이값 1초단위 반올림으로 로딩텍스트값에 싱크
-  // TODO: Done 텍스트 보이게 1초 지연후 Start 버튼 렌더
-  // TODO: 전체 인터벌 1초 / 로딩 ui 남은시간 따로 인터벌
   // TODO: 인터벌 매끄럽지 못하면 애니메이션or더짧게
 
   return (
@@ -92,15 +93,16 @@ export default function TimeButton({ className }: TimeButtonProps) {
           timeDiff.seconds
         )}`}</div>
       )}
-      {isExistTargetTime == false && (
-        <Button
-          text={buttonText}
-          handleClickButton={() => setToggle(true)}
-          disabled={isLoading || isFetching}
-        />
-      )}
-
-      {/* <div>Done.</div> */}
+      {isExistTargetTime == false &&
+        (doneToggle ? (
+          <div>Done.</div>
+        ) : (
+          <Button
+            text={buttonText}
+            handleClickButton={() => setToggle(true)}
+            disabled={isLoading || isFetching}
+          />
+        ))}
     </div>
   );
 }
