@@ -106,7 +106,7 @@ export default function TimeButton({ className }: TimeButtonProps) {
             />
           ))}
       </div>
-      {targetTime && targetTime > 0 && (
+      {targetTime && targetTime > 0 ? (
         <div
           className={cx(
             `absolute top-0 left-0 h-[100%] w-[0] bg-loadingPrimary transition-width`,
@@ -114,7 +114,7 @@ export default function TimeButton({ className }: TimeButtonProps) {
           )}
           style={{ animationDuration: `${loadingDuration}ms` }}
         />
-      )}
+      ) : null}
     </>
   );
 }
