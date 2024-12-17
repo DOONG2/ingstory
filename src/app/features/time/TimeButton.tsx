@@ -10,7 +10,7 @@ type TimeButtonProps = {
   className?: string;
 };
 
-type TimeObject = {
+export type TimeObject = {
   minutes: number;
   seconds: number;
 };
@@ -21,7 +21,8 @@ export default function TimeButton({ className }: TimeButtonProps) {
     Number(localStorage.getItem(TARGET_TIME))
   );
   const [timeDiff, setTimeDiff] = useState<TimeObject>(() => {
-    if (targetTime == null) return { minutes: 0, seconds: 0 };
+    if (targetTime == null || targetTime == 0)
+      return { minutes: 0, seconds: 0 };
     const { minutes, seconds } = calculateTimeDifference({
       currentTime,
       targetTime,
@@ -59,6 +60,7 @@ export default function TimeButton({ className }: TimeButtonProps) {
     duration: data?.duration,
     setTargetTime,
     setIsExistTargetTime,
+    setTimeDiff,
   });
 
   useEffect(() => {
