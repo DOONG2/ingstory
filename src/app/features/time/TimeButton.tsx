@@ -1,11 +1,17 @@
 import { useGetTimeQuery } from "@/apis/time";
 import Button from "@/shared/Button";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { TARGET_TIME } from "@/shared/constants/key";
 import useTargetTimeUpdate from "./hooks/useTargetTimeUpdate";
+import formatTimeText from "./formatTimeText";
 
 type TimeButtonProps = {
   className?: string;
+};
+
+type TimeObject = {
+  minutes: number;
+  seconds: number;
 };
 
 export default function TimeButton({ className }: TimeButtonProps) {
@@ -13,34 +19,63 @@ export default function TimeButton({ className }: TimeButtonProps) {
   const [targetTime, setTargetTime] = useState<number | null>(
     Number(localStorage.getItem(TARGET_TIME))
   );
-  const [timeDiff, setTimeDiff] = useState<number | null>(
-    targetTime ? targetTime - currentTime : null
-  );
+  const [timeDiff, setTimeDiff] = useState<TimeObject>({
+    minutes: 0,
+    seconds: 0,
+  });
   const [toggle, setToggle] = useState(false);
+  const [isExistTargetTime, setIsExistTargetTime] = useState<boolean>(
+    localStorage.getItem(TARGET_TIME) != null
+  );
 
   const { data, isError, isLoading, isFetching, isSuccess } = useGetTimeQuery({
     toggle,
   });
 
   const buttonText = isLoading || isFetching ? "loading.." : "Start";
-  const isExistTargetTime = localStorage.getItem(TARGET_TIME) != null;
 
-  useTargetTimeUpdate({ isSuccess, duration: data?.duration, setTargetTime });
+  console.log(currentTime, targetTime, timeDiff, isExistTargetTime);
+
+  const initTimeButtonState = useCallback(() => {
+    localStorage.removeItem(TARGET_TIME);
+    setTargetTime(null);
+    setTimeDiff({ minutes: 0, seconds: 0 });
+    setIsExistTargetTime(false);
+    setToggle(false);
+  }, []);
+
+  useTargetTimeUpdate({
+    isSuccess,
+    duration: data?.duration,
+    setTargetTime,
+    setIsExistTargetTime,
+  });
 
   useEffect(() => {
     if (!isExistTargetTime) return;
     const intervalId = setInterval(() => {
       const currentTime = new Date().getTime();
       setCurrentTime(currentTime);
-      if (targetTime != null) setTimeDiff(targetTime - currentTime);
+
+      if (targetTime == null) return;
+      let timeDiff = targetTime - currentTime;
+
+      if (timeDiff <= 0) {
+        clearInterval(intervalId);
+        setTimeDiff({ minutes: 0, seconds: 0 });
+        initTimeButtonState();
+      }
+
+      const minutes = Math.floor(timeDiff / (1000 * 60));
+      timeDiff -= minutes * (1000 * 60);
+      const seconds = Math.floor(timeDiff / 1000);
+      setTimeDiff({ minutes, seconds });
+
+      console.log("interval : " + currentTime);
     }, 1000);
 
-    console.log(currentTime, targetTime, timeDiff);
-
     return () => clearInterval(intervalId);
-  }, [currentTime, isExistTargetTime, targetTime, timeDiff]);
-
-  useEffect(() => {}, [targetTime]);
+  }, [initTimeButtonState, isExistTargetTime, targetTime]);
 
   // TODO: diff 음수일때 로컬스토리지 삭제, 상태 init, Done 변경
   // TODO: 실시간 차이값 / 처음 차이값 계산해서 로딩레이어 넓이값 조절
@@ -52,7 +87,11 @@ export default function TimeButton({ className }: TimeButtonProps) {
   return (
     <div className={` ${className}`}>
       {isError && <div>Error.</div>}
-      {isExistTargetTime == true && <div>{timeDiff}</div>}
+      {isExistTargetTime == true && (
+        <div>{`${formatTimeText(timeDiff.minutes)}:${formatTimeText(
+          timeDiff.seconds
+        )}`}</div>
+      )}
       {isExistTargetTime == false && (
         <Button
           text={buttonText}
