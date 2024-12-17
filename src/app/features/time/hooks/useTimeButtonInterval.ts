@@ -36,8 +36,6 @@ export default function useTimeButtonInterval({
       }
 
       setTimeDiff({ minutes, seconds });
-
-      console.log("interval : " + currentTime);
     }, 1000);
 
     return () => clearInterval(intervalId);
