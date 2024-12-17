@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { client } from "./axios";
+import { GET_TIME_QUERY_KEY } from "@/shared/constants/query";
 
 export type GetTimeResponse = { duration: string };
 
@@ -14,9 +15,8 @@ export type GetTimeQueryProps = {
 
 export function useGetTimeQuery({ toggle }: GetTimeQueryProps) {
   return useQuery({
-    queryKey: ["getTime"],
+    queryKey: [GET_TIME_QUERY_KEY],
     queryFn: () => getTime(),
     enabled: toggle === true,
-    staleTime: 0,
   });
 }

@@ -5,6 +5,8 @@ import { TARGET_TIME } from "@/shared/constants/key";
 import useTargetTimeUpdate from "./hooks/useTargetTimeUpdate";
 import formatTimeText from "./formatTimeText";
 import { calculateTimeDifference } from "./calculateTimeDifference";
+import { GET_TIME_QUERY_KEY } from "@/shared/constants/query";
+import { queryClient } from "@/shared/ReactQueryProvider";
 
 type TimeButtonProps = {
   className?: string;
@@ -50,6 +52,7 @@ export default function TimeButton({ className }: TimeButtonProps) {
     setIsExistTargetTime(false);
     setButtonToggle(false);
     setDoneToggle(true);
+    queryClient.removeQueries({ queryKey: [GET_TIME_QUERY_KEY] });
     setTimeout(() => {
       setDoneToggle(false);
     }, 1000);
