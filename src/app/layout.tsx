@@ -4,7 +4,7 @@ import "./globals.css";
 import ReactQueryProvider from "@/shared/ReactQueryProvider";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
-export const jetBrainsMonoRegular = localFont({
+const jetBrainsMonoRegular = localFont({
   src: "./fonts/JetBrainsMono/JetBrainsMono-Regular.woff2",
 });
 

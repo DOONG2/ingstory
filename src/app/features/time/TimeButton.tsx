@@ -10,6 +10,7 @@ import { queryClient } from "@/shared/ReactQueryProvider";
 import useTimeButtonInterval from "./hooks/useTimeButtonInterval";
 import { cx } from "@/shared/tailWindCSS";
 import useTimeButtonLoadingLayer from "./hooks/useTimeButtonLoadingLayer";
+import guardLocalStorage from "@/shared/guardLocalStorage";
 
 type TimeButtonProps = {
   className?: string;
@@ -28,7 +29,7 @@ export default function TimeButton({ className }: TimeButtonProps) {
     new Date().getTime()
   );
   const [targetTime, setTargetTime] = useState<targetTimeType>(
-    Number(localStorage.getItem(TARGET_TIME))
+    Number(guardLocalStorage(TARGET_TIME))
   );
   const [timeDiff, setTimeDiff] = useState<TimeObject>(() => {
     if (targetTime === null || targetTime === 0)
@@ -41,7 +42,7 @@ export default function TimeButton({ className }: TimeButtonProps) {
   });
   const [buttonToggle, setButtonToggle] = useState(false);
   const [isExistTargetTime, setIsExistTargetTime] = useState<boolean>(
-    localStorage.getItem(TARGET_TIME) !== null
+    guardLocalStorage(TARGET_TIME) !== null
   );
   const [doneToggle, setDoneToggle] = useState(false);
 
