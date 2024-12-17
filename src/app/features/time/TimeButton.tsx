@@ -8,6 +8,7 @@ import { calculateTimeDifference } from "./calculateTimeDifference";
 import { GET_TIME_QUERY_KEY } from "@/shared/constants/query";
 import { queryClient } from "@/shared/ReactQueryProvider";
 import useTimeButtonInterval from "./hooks/useTimeButtonInterval";
+import { cx } from "@/shared/tailWindCSS";
 
 type TimeButtonProps = {
   className?: string;
@@ -37,6 +38,7 @@ export default function TimeButton({ className }: TimeButtonProps) {
     localStorage.getItem(TARGET_TIME) != null
   );
   const [doneToggle, setDoneToggle] = useState(false);
+  const [loadingDuration, setLoadingDuration] = useState(0);
 
   const { data, isError, isLoading, isFetching, isSuccess } = useGetTimeQuery({
     toggle: buttonToggle,
@@ -75,28 +77,47 @@ export default function TimeButton({ className }: TimeButtonProps) {
     setCurrentTime,
   });
 
+  useEffect(() => {
+    if (targetTime === null || targetTime === 0) return;
+    const { timeDiff } = calculateTimeDifference({ currentTime, targetTime });
+    setLoadingDuration(timeDiff);
+  }, [targetTime]);
+
+  console.log(loadingDuration);
+
   // TODO: 실시간 차이값 / 처음 차이값 계산해서 로딩레이어 넓이값 조절
   // TODO: 인터벌 매끄럽지 못하면 애니메이션or더짧게
 
   return (
-    <div className={` ${className}`}>
-      {isError && <div>Error.</div>}
-      {isExistTargetTime == true && (
-        <div>{`${formatTimeText(timeDiff.minutes)}:${formatTimeText(
-          timeDiff.seconds
-        )}`}</div>
+    <>
+      <div className={` ${className} z-10`}>
+        {isError && <div>Error.</div>}
+        {isExistTargetTime == true && (
+          <div>{`${formatTimeText(timeDiff.minutes)}:${formatTimeText(
+            timeDiff.seconds
+          )}`}</div>
+        )}
+        {isExistTargetTime == false &&
+          (doneToggle ? (
+            <div>Done.</div>
+          ) : (
+            <Button
+              className="disabled:hover:bg-bgPrimary"
+              text={buttonText}
+              handleClickButton={() => setButtonToggle(true)}
+              disabled={isLoading || isFetching}
+            />
+          ))}
+      </div>
+      {targetTime && targetTime > 0 && (
+        <div
+          className={cx(
+            `absolute top-0 left-0 h-[100%] w-[0] bg-loadingPrimary transition-width`,
+            isExistTargetTime ? "animate-increase" : "animate-decrease"
+          )}
+          style={{ animationDuration: `${loadingDuration}ms` }}
+        />
       )}
-      {isExistTargetTime == false &&
-        (doneToggle ? (
-          <div>Done.</div>
-        ) : (
-          <Button
-            className="disabled:hover:bg-bgPrimary"
-            text={buttonText}
-            handleClickButton={() => setButtonToggle(true)}
-            disabled={isLoading || isFetching}
-          />
-        ))}
-    </div>
+    </>
   );
 }

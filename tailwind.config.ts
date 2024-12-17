@@ -11,6 +11,24 @@ export default {
         hoverPrimary: "#ACACAC",
         loadingPrimary: "#ACACAC",
       },
+      transitionProperty: {
+        height: "height",
+        width: "width",
+      },
+      keyframes: {
+        "width-increase": {
+          "0%": { width: "0%" },
+          "100%": { width: "100%" },
+        },
+        "width-decrease": {
+          "0%": { width: "100%" },
+          "100%": { width: "0%" },
+        },
+      },
+      animation: {
+        increase: "width-increase ease-in-out forwards",
+        decrease: "width-decrease 0s ease-in-out forwards",
+      },
     },
   },
   plugins: [],
