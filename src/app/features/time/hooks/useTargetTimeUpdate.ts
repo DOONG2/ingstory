@@ -20,7 +20,7 @@ export default function useTargetTimeUpdate({
   setTimeDiff,
 }: TargetTimeUpdateProps) {
   useEffect(() => {
-    if (isSuccess && duration != undefined) {
+    if (isSuccess && duration !== undefined) {
       const targetTimeDate = getDateByString(duration);
       const currentTime = new Date().getTime();
       const targetTime =

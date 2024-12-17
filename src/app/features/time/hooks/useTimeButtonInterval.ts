@@ -23,7 +23,7 @@ export default function useTimeButtonInterval({
       const currentTime = new Date().getTime();
       setCurrentTime(currentTime);
 
-      if (targetTime == null) return;
+      if (targetTime === null) return;
       const { minutes, seconds } = calculateTimeDifference({
         currentTime,
         targetTime,

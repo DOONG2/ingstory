@@ -31,7 +31,7 @@ export default function TimeButton({ className }: TimeButtonProps) {
     Number(localStorage.getItem(TARGET_TIME))
   );
   const [timeDiff, setTimeDiff] = useState<TimeObject>(() => {
-    if (targetTime == null || targetTime == 0)
+    if (targetTime === null || targetTime === 0)
       return { minutes: 0, seconds: 0 };
     const { minutes, seconds } = calculateTimeDifference({
       currentTime,
@@ -41,7 +41,7 @@ export default function TimeButton({ className }: TimeButtonProps) {
   });
   const [buttonToggle, setButtonToggle] = useState(false);
   const [isExistTargetTime, setIsExistTargetTime] = useState<boolean>(
-    localStorage.getItem(TARGET_TIME) != null
+    localStorage.getItem(TARGET_TIME) !== null
   );
   const [doneToggle, setDoneToggle] = useState(false);
 
@@ -89,12 +89,12 @@ export default function TimeButton({ className }: TimeButtonProps) {
     <>
       <div className={` ${className} z-10`}>
         {isError && <div>Error.</div>}
-        {isExistTargetTime == true && (
+        {isExistTargetTime === true && (
           <div>{`${formatTimeText(timeDiff.minutes)}:${formatTimeText(
             timeDiff.seconds
           )}`}</div>
         )}
-        {isExistTargetTime == false &&
+        {isExistTargetTime === false &&
           (doneToggle ? (
             <div>Done.</div>
           ) : (
