@@ -7,6 +7,7 @@ import formatTimeText from "./formatTimeText";
 import { calculateTimeDifference } from "./calculateTimeDifference";
 import { GET_TIME_QUERY_KEY } from "@/shared/constants/query";
 import { queryClient } from "@/shared/ReactQueryProvider";
+import useTimeButtonInterval from "./hooks/useTimeButtonInterval";
 
 type TimeButtonProps = {
   className?: string;
@@ -66,31 +67,13 @@ export default function TimeButton({ className }: TimeButtonProps) {
     setTimeDiff,
   });
 
-  useEffect(() => {
-    if (!isExistTargetTime) return;
-    const intervalId = setInterval(() => {
-      const currentTime = new Date().getTime();
-      setCurrentTime(currentTime);
-
-      if (targetTime == null) return;
-      const { minutes, seconds } = calculateTimeDifference({
-        currentTime,
-        targetTime,
-      });
-
-      if (minutes < 0 || seconds < 0) {
-        clearInterval(intervalId);
-        initTimeButtonState();
-        return;
-      }
-
-      setTimeDiff({ minutes, seconds });
-
-      console.log("interval : " + currentTime);
-    }, 1000);
-
-    return () => clearInterval(intervalId);
-  }, [initTimeButtonState, isExistTargetTime, targetTime]);
+  useTimeButtonInterval({
+    isExistTargetTime,
+    targetTime,
+    initTimeButtonState,
+    setTimeDiff,
+    setCurrentTime,
+  });
 
   // TODO: 실시간 차이값 / 처음 차이값 계산해서 로딩레이어 넓이값 조절
   // TODO: 인터벌 매끄럽지 못하면 애니메이션or더짧게
